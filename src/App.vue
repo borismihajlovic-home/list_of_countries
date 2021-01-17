@@ -8,16 +8,6 @@
 
 <style lang="scss">
 
-body{
-  font-family: 'Nunito Sans', sans-serif;
-  font-size: 16px;
-  color: $blue-very-dark-text;
-  // line-height: 1.5;
-  font-weight: $font-weight-normal;
-  background-color: $grey-lite;
-  scroll-behavior: smooth;
-}
-
 .container{
     width: 100%;
     max-width: 1440px;
