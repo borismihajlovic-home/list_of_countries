@@ -9,7 +9,7 @@
 		<section class="search-container">
 			<div class="input-holder">
 				<i class="fas fa-search fa-3x"></i>
-				<input placeholder="Search for a country..." type="text">
+				<input placeholder="Search for a country..." type="text" @input="filterByName" v-model="filterInputValue">
 			</div>
 			<div class="filter-container">
 				<div class="filter-button">Filter by region</div>
@@ -21,67 +21,29 @@
 			</div>
 		</section>
 
-		<section class="countries-list">
-			<article>
-				<div class="card-image"></div>
-				<div class="card-text">
-					<div class="card-title">Brazil</div>
-					<p><span>Population: </span>206,135,893</p>
-					<p><span>Region: </span>Americas</p>
-					<p><span>Capital: </span>Brasilia</p>
-				</div>
-			</article>
-			<article>
-				<div class="card-image"></div>
-				<div class="card-text">
-					<div class="card-title">Brazil</div>
-					<p><span>Population: </span>206,135,893</p>
-					<p><span>Region: </span>Americas</p>
-					<p><span>Capital: </span>Brasilia</p>
-				</div>
-			</article>
-			<article>
-				<div class="card-image"></div>
-				<div class="card-text">
-					<div class="card-title">Brazil</div>
-					<p><span>Population: </span>206,135,893</p>
-					<p><span>Region: </span>Americas</p>
-					<p><span>Capital: </span>Brasilia</p>
-				</div>
-			</article>
-			<article>
-				<div class="card-image"></div>
-				<div class="card-text">
-					<div class="card-title">Brazil</div>
-					<p><span>Population: </span>206,135,893</p>
-					<p><span>Region: </span>Americas</p>
-					<p><span>Capital: </span>Brasilia</p>
-				</div>
-			</article>
-			<article>
-				<div class="card-image"></div>
-				<div class="card-text">
-					<div class="card-title">Brazil</div>
-					<p><span>Population: </span>206,135,893</p>
-					<p><span>Region: </span>Americas</p>
-					<p><span>Capital: </span>Brasilia</p>
-				</div>
-			</article>
-			<article>
-				<div class="card-image"></div>
-				<div class="card-text">
-					<div class="card-title">Brazil</div>
-					<p><span>Population: </span>206,135,893</p>
-					<p><span>Region: </span>Americas</p>
-					<p><span>Capital: </span>Brasilia</p>
-				</div>
-			</article>
-		</section>
+		<list-of-countries></list-of-countries>
 	</main>
 </template>
 
 <script>
+import ListOfCountries from '../components/ListOfCountries.vue';
+
 export default {
+	components: {
+		ListOfCountries
+	},
+	data(){
+		return{
+			filterInputValue: null,
+			regionValue: null
+		}
+	},
+	methods:{
+		filterByName(event){
+			this.filterInputValue = event.target.value;
+			console.log(event, this.filterInputValue);
+		}
+	}
 }
 </script>
 
@@ -114,6 +76,7 @@ export default {
 			font-size: 14px;
 			.input-holder{
 				position: relative;
+				@include elements-box-shadow;
 				i{
 					font-size: 20px;
 					color:$grey;
@@ -157,26 +120,6 @@ export default {
 				}
 				&.active .filter-options{
 					max-height: 200px;
-				}
-			}
-		}
-		.countries-list{
-			display: flex;
-			justify-content: space-between;
-			flex-wrap: wrap;
-			article{
-				border-radius: 10px;
-				background-color: $white;
-				width: 260px;
-				margin-bottom: 75px;
-				.card-image{
-					height: 160px;
-					width: 100%;
-				}
-				.card-text{
-					.card-title{
-						font-weight: $font-weight-bold;
-					}
 				}
 			}
 		}
