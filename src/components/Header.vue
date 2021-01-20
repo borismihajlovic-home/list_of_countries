@@ -1,8 +1,8 @@
 <template>
-    <header>
+    <header :class="{'dark-mode': isDark}">
 		<div class="container">
-			<div class="logo">Where in the world?</div>
-			<div class="mode-change"><i class="far fa-moon"></i> Dark Mode</div>
+            <router-link class="logo" :to="`/?isDark=${isDark}`">Where in the world?</router-link>
+			<div class="mode-change" @click="changeMode"><i class="far fa-moon"></i> Dark Mode</div>
 		</div>
 	</header>
 	
@@ -11,7 +11,17 @@
 
 <script>
 export default {
-    
+    name: 'Header',
+    props: ['isDark'],
+    emits: ['dark-or-light'],
+    methods: {
+        changeMode(){
+            const currentPath = this.$route.path;
+            console.log(this.$router)
+            this.$router.replace({path: currentPath, query: {isDark: !this.isDark}});
+            this.$emit('dark-or-light', !this.isDark);
+        }
+    }
 }
 </script>
 
@@ -21,7 +31,6 @@ header{
     -webkit-box-shadow: 0 4px 2px -2px rgba(0,0,0,0.15);
     -moz-box-shadow:    0 4px 2px -2px rgba(0,0,0,0.15);
     box-shadow:         0 4px 2px -2px rgba(0,0,0,0.15);
-    background-color: $white;
     &>div{
         display: flex;
         justify-content: space-between;

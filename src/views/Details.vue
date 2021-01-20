@@ -1,38 +1,37 @@
 <template>
-	<Header></Header>
-	<main class="container details-page">
-		<div class="back">
-			<router-link to="/"><i class="fas fa-arrow-left"></i> Back</router-link>
-			<!-- <button><i class="fas fa-arrow-left"></i> Back</button> -->
-		</div>
-		<section class="details">
-			<div class="flag-holder"><img :src="countryDetails.flag" alt="countryFlag"></div>
-			<div class="details-holder">
-				<h3>{{ countryDetails.name }}</h3>
-				<div class="info-holder">
-					<div>
-						<p><strong>Native name:</strong> {{ countryDetails.nativeName }}</p>
-						<p><strong>Population:</strong> {{ countryDetails.population }}</p>
-						<p><strong>Region:</strong> {{ countryDetails.region }}</p>
-						<p><strong>Sub Region:</strong> {{ countryDetails.subregion }}</p>
-						<p><strong>Capital:</strong> {{ countryDetails.capital }}</p>
-					</div>
-					<div>
-						<p><strong>Top Level Domain:</strong> <span :key="index" v-for="(domain, index) in countryDetails.topLevelDomain">{{ countryDetails.topLevelDomain.length == index+1 ? domain : domain+', ' }}</span></p>
-						<p><strong>Currencies:</strong> <span :key="index" v-for="(item, index) in countryDetails.currencies">{{ countryDetails.currencies.length === index+1 ? item.name : item.name+', ' }}</span></p>
-						<p><strong>Languages:</strong> <span :key="index" v-for="(item, index) in countryDetails.languages">{{ countryDetails.languages.length === index+1 ? item.name : item.name+', ' }}</span></p>
-					</div>
-				</div>
-				<div class="border-countries-holder">
-					<strong>Border Countries: </strong>
-					<div class="countries">
-						<!-- <span :key="index" v-for="(item, index) in borteringCountries"> -->
-							<router-link :key="index" v-for="(item, index) in borteringCountries" :to="item.code" @click="getCountryDetails">{{ item.name }}</router-link>
-						<!-- </span> -->
-					</div>
-				</div>
+	<Header :isDark="isDark" @dark-or-light="changeMode"></Header>
+	<main class="details-page" :class="{'dark-mode': isDark}">
+		<div class="container">
+			<div class="back">
+				<router-link :to="`/?isDark=${isDark}`"><i class="fas fa-arrow-left"></i> Back</router-link>
 			</div>
-		</section>
+			<section class="details">
+				<div class="flag-holder"><img :src="countryDetails.flag" alt="countryFlag"></div>
+				<div class="details-holder">
+					<h3>{{ countryDetails.name }}</h3>
+					<div class="info-holder">
+						<div>
+							<p><span>Native name:</span> {{ countryDetails.nativeName }}</p>
+							<p><span>Population:</span> {{ countryDetails.population }}</p>
+							<p><span>Region:</span> {{ countryDetails.region }}</p>
+							<p><span>Sub Region:</span> {{ countryDetails.subregion }}</p>
+							<p><span>Capital:</span> {{ countryDetails.capital }}</p>
+						</div>
+						<div>
+							<p><span>Top Level Domain:</span> <span :key="index" v-for="(domain, index) in countryDetails.topLevelDomain">{{ countryDetails.topLevelDomain.length == index+1 ? domain : domain+', ' }}</span></p>
+							<p><span>Currencies:</span> <span :key="index" v-for="(item, index) in countryDetails.currencies">{{ countryDetails.currencies.length === index+1 ? item.name : item.name+', ' }}</span></p>
+							<p><span>Languages:</span> <span :key="index" v-for="(item, index) in countryDetails.languages">{{ countryDetails.languages.length === index+1 ? item.name : item.name+', ' }}</span></p>
+						</div>
+					</div>
+					<div class="border-countries-holder">
+						<span>Border Countries: </span>
+						<div class="countries">
+							<router-link :key="index" v-for="(item, index) in borteringCountries" :to="item.code+'?isDark='+isDark" @click="getCountryDetails">{{ item.name }}</router-link>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
 	</main>
 </template>
 
@@ -40,6 +39,7 @@
 import Header from '../components/Header.vue';
 
 export default {
+	name: 'Details',
 	components:{
 		Header
 	},
@@ -49,12 +49,12 @@ export default {
 			borteringCountries: [],
 			noData: false,
 			err: false,
-			isLoading: false
+			isLoading: false,
+			isDark: false
 		}
 	},
 	methods: {
 		getBorderingCountries(){
-			console.log(this.countryDetails.borders);
 			this.countryDetails.borders.forEach(element => {
 				const countryDetailsUrl = `https://restcountries.eu/rest/v2/alpha/${element}`;
 				fetch(countryDetailsUrl).then((response)=>{
@@ -63,8 +63,7 @@ export default {
 					}
 				})
 				.then(this.setBorderingCountries)
-				.catch((error)=>{
-					console.log(error);
+				.catch(()=>{
 					this.err = true;
 				});	
 			});
@@ -76,9 +75,9 @@ export default {
 			this.noData = false;
 			this.err = false;
 			this.isLoading = false;
-			console.log(dataObj);
 
 			if(dataObj.constructor && Object.keys(dataObj).length){
+				dataObj.population = this.formatNumber(dataObj.population);
 				this.countryDetails = dataObj;
 				this.getBorderingCountries();
 			}else{
@@ -97,14 +96,22 @@ export default {
 				}
 			})
 			.then(this.setCountryDetails)
-			.catch((error)=>{
-				console.log(error);
+			.catch(()=>{
 				this.err = true;
 			});
+		},
+		changeMode(){
+			this.isDark = !this.isDark;
+		},
+		formatNumber(num) {
+			return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 		}
 	},
 	mounted(){
 		this.getCountryDetails();
+		if(this.$route.query.isDark == 'true'){
+			this.isDark = this.$route.query.isDark;
+		}
 	}
 }
 </script>
@@ -121,10 +128,10 @@ export default {
 				justify-content: center;
 				width: 150px;
 				height: 40px;
-				background: white;
 				border: none;
 				font-size: 12px;
 				border-radius: 5px;
+				font-weight: $font-weight-lite;
 				cursor: pointer;
 				@include elements-box-shadow;
 				i{
@@ -143,6 +150,7 @@ export default {
 			}
 			.details-holder{
 				h3{
+					font-size: 20px;
 					margin-bottom: 45px;
 				}
 				.info-holder{
@@ -154,12 +162,18 @@ export default {
 						p:first-child{
 							margin-top: 0;
 						}
+						p{
+							font-weight: $font-weight-lite;
+							span:first-child{
+								font-weight: $font-weight-normal;
+							}
+						}
 					}
 				}
 			}
 			.border-countries-holder{
 				display: flex;
-				strong{
+				span{
 					width: 28%;
 				}
 				.countries{
@@ -171,18 +185,51 @@ export default {
 						line-height: 30px;
 						margin-bottom: 10px;
 						margin-right: 10px;
-						background: white;
 						white-space: nowrap;
 						padding: 0 5px;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						text-align: center;
 						font-size: 12px;
+						font-weight: $font-weight-lite;
 						border-radius: 5px;
 						cursor: pointer;
 						@include elements-box-shadow;
 					}
 				}
+			}
+		}
+	}
+
+	@media screen and (max-width: 1120px){
+		main.details-page .details .border-countries-holder{
+			display: block;
+			span{
+				display: block;
+				margin-bottom: 20px;
+			}
+			span,
+			.countries{
+				width: 100%;
+			}
+		}
+	}
+	@media screen and (max-width: 800px){
+		main.details-page .details{
+			display: block;
+			.details-holder h3{
+				margin-top: 75px;
+			}
+		}
+	}
+	@media screen and (max-width: 500px){
+		main.details-page .details .details-holder .info-holder{
+			display: block;
+			&>div{
+				width: 100%;
+			}
+			div:first-child{
+				margin-bottom: 75px;
 			}
 		}
 	}

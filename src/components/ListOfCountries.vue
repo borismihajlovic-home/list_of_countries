@@ -1,6 +1,6 @@
 <template>
     <section v-if="!isLoading && countries && countries.length > 0"  class="countries-list">
-        <router-link :to="'/details/'+country.alpha3Code" v-for="country in countries" :key="country.alpha3Code">
+        <router-link :to="`/details/${country.alpha3Code}?isDark=${isDark}`" v-for="country in countries" :key="country.alpha3Code">
             <div class="card-image">
                 <img :src="country.flag" alt="countryFlag">
             </div>
@@ -20,7 +20,8 @@
 
 <script>
 export default {
-    props: ['inputValue', 'region'],
+    name: 'List of countries',
+    props: ['inputValue', 'region', 'isDark'],
     data(){
         return{
 			fixedArrayCountries: [],
@@ -52,15 +53,19 @@ export default {
 				}
 			}).then((data) => {
                 this.isLoading = false;
-				this.fixedArrayCountries = data;
+                data.forEach((item)=>{
+                    item.population = this.formatNumber(item.population);
+                });
+                this.fixedArrayCountries = data;
 				this.countries = data;
-			}).catch((error)=>{
-                console.log(error);
+			}).catch(()=>{
                 this.isLoading = false;
                 this.err = 'There was an error. Please try again.';
 			});
         },
-        
+		formatNumber(num) {
+			return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+		}
     },
     mounted(){
         this.getCountries();
@@ -80,7 +85,7 @@ export default {
         background-color: $white;
         width: 260px;
         margin-bottom: 75px;
-        // cursor: pointer;
+        margin-right: 10px;
         .card-image{
             height: 160px;
             width: 100%;
@@ -112,5 +117,15 @@ export default {
 }
 .error{
     color: $red;
+}
+
+@media screen and (max-width: 580px) {
+    .countries-list a{
+        width: 100%;
+        margin-right: 0;
+        .card-image{
+            height: auto;
+        }
+    }
 }
 </style>

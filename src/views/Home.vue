@@ -1,21 +1,23 @@
 <template>
-	<Header></Header>
-	<main class="container home">
-		<section class="search-container">
-			<div class="input-holder">
-				<i class="fas fa-search fa-3x"></i>
-				<input placeholder="Search for a country..." type="text" @input="filterByName" v-model="filterInputValue">
-			</div>
-			<div class="filter-container" :class="{active: isListOpened}">
-				<div class="filter-button" @click="toggleRegionList">{{ regionValue === '' ? 'Filter by region' : regionValue }}</div>
-				<div class="filter-options">
-					<div @click="selectRegion('')">all</div>
-					<div v-for="(regionName, index) in regions" :key="index" @click="selectRegion(regionName)">{{ regionName }}</div>
-				</div> 
-			</div>
-		</section>
+	<Header :isDark="isDark" @dark-or-light="changeMode"></Header>
+	<main class="home" :class="{'dark-mode': isDark}">
+		<div class="container">
+			<section class="search-container">
+				<div class="input-holder">
+					<i class="fas fa-search fa-3x"></i>
+					<input placeholder="Search for a country..." type="text" @input="filterByName" v-model="filterInputValue">
+				</div>
+				<div class="filter-container" :class="{active: isListOpened}">
+					<div class="filter-button" @click="toggleRegionList">{{ regionValue === '' ? 'Filter by region' : regionValue }}</div>
+					<div class="filter-options">
+						<div @click="selectRegion('')">all</div>
+						<div v-for="(regionName, index) in regions" :key="index" @click="selectRegion(regionName)">{{ regionName }}</div>
+					</div> 
+				</div>
+			</section>
 
-		<list-of-countries :inputValue="filterInputValue" :region="regionValue"></list-of-countries>
+			<list-of-countries :is-dark="isDark" :inputValue="filterInputValue" :region="regionValue"></list-of-countries>
+		</div>
 	</main>
 </template>
 
@@ -24,12 +26,14 @@ import ListOfCountries from '../components/ListOfCountries.vue';
 import Header from '../components/Header.vue';
 
 export default {
+	name: 'Home page',
 	components: {
 		Header,
 		ListOfCountries
 	},
 	data(){
 		return{
+			isDark: false,
 			filterInputValue: null,
 			regionValue: '',
 			isListOpened: false,
@@ -46,6 +50,14 @@ export default {
 		},
 		toggleRegionList(){
 			this.isListOpened = !this.isListOpened;
+		},
+		changeMode(){
+			this.isDark = !this.isDark;
+		}
+	},
+	mounted(){
+		if(this.$route.query.isDark == 'true'){
+			this.isDark = this.$route.query.isDark;
 		}
 	}
 }
@@ -77,7 +89,6 @@ export default {
 					width: 480px;
 					padding: 1.5em 1.5em 1.5em 5em;
 					border-radius: 5px;
-					background-color: $white;
 					&::placeholder{
 						color: $grey;
 					}
@@ -93,7 +104,6 @@ export default {
 					width: 100%;
 					padding: 1.5em 1.7em;
 					border-radius: 5px;
-					background-color: $white;
 					text-transform: capitalize;
 					position: relative;
 					cursor: pointer;
@@ -104,8 +114,8 @@ export default {
 						right: 11px;
 						width: 10px;
 						height: 10px;
-						border-bottom: 3px solid #000;
-						border-right: 3px solid #000;
+						border-bottom: 3px solid;
+						border-right: 3px solid;
 						transform: rotate(45deg);
 					}
 				}
@@ -117,7 +127,6 @@ export default {
 					max-height: 0;
 					overflow: hidden;
 					border-radius: 5px;
-					background-color: $white;
 					transition: all 0.15s linear;
 					cursor: pointer;
 					div{
@@ -131,4 +140,16 @@ export default {
 			}
 		}
 	}
+
+	@media screen and (max-width: 750px) {
+    main.home .search-container{
+        display: block;
+		.input-holder{
+			margin-bottom: 50px;
+			input{
+				width: 100%;
+			}
+		}
+}
+}
 </style>
