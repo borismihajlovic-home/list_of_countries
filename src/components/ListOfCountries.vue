@@ -1,6 +1,6 @@
 <template>
     <section v-if="!isLoading && countries && countries.length > 0"  class="countries-list">
-        <article v-for="country in countries" :key="country.alpha3Code">
+        <router-link :to="'/details/'+country.alpha3Code" v-for="country in countries" :key="country.alpha3Code">
             <div class="card-image">
                 <img :src="country.flag" alt="countryFlag">
             </div>
@@ -10,41 +10,57 @@
                 <p><strong>Region: </strong>{{ country.region }}</p>
                 <p><strong>Capital: </strong>{{ country.capital }}</p>
             </div>
-        </article>
-
+        </router-link>
     </section>
-    <div class="loading" v-else-if="isLoading"></div>
+    <div class="loading" v-else-if="isLoading">Loading please wait...</div>
     <div class="no-data" v-else-if="!isLoading && (!countries || countries.length < 1)">No countries found.</div>
-    <div class="error" v-else>{{ error }}</div>
+    <div class="error" v-else>{{ err }}</div>
 </template>
 
 
 <script>
 export default {
+    props: ['inputValue', 'region'],
     data(){
         return{
+			fixedArrayCountries: [],
 			countries: [],
 			isLoading: false,
-			error: null
+			err: null
 		}
+    },
+    watch: {
+        inputValue(value){
+            this.countries = this.fixedArrayCountries.filter(country => {
+                return country.name.toLowerCase().includes(value.toLowerCase());
+            });
+        },
+        region(value){
+            console.log(value);
+            this.countries = this.fixedArrayCountries.filter(country => {
+                return country.region.toLowerCase().includes(value.toLowerCase());
+            });
+        }
     },
     methods: {
         getCountries(){
             this.isLoading = true;
-            this.error = null;
+            this.err = null;
 			fetch('https://restcountries.eu/rest/v2/all').then((response)=>{
 				if(response.ok){
 					return response.json();
 				}
 			}).then((data) => {
                 this.isLoading = false;
+				this.fixedArrayCountries = data;
 				this.countries = data;
 			}).catch((error)=>{
                 console.log(error);
                 this.isLoading = false;
-                this.error = 'There was an error. Please try again.';
+                this.err = 'There was an error. Please try again.';
 			});
-		}
+        },
+        
     },
     mounted(){
         this.getCountries();
@@ -58,15 +74,18 @@ export default {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    article{
+    a{
+        @include elements-box-shadow;
         border-radius: 10px;
         background-color: $white;
         width: 260px;
         margin-bottom: 75px;
+        // cursor: pointer;
         .card-image{
             height: 160px;
             width: 100%;
             img{
+                height: 100%;
                 border-top-left-radius: 10px;
                 border-top-right-radius: 10px;
             }
@@ -82,5 +101,16 @@ export default {
             }
         }
     }
+}
+.no-data,
+.loading,
+.error{
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    padding: 2em 0;
+}
+.error{
+    color: $red;
 }
 </style>

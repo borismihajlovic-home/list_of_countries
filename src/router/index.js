@@ -9,9 +9,9 @@ const routes = [
     component: Home
   },
   {
-    path: '/details/:countryId',
+    path: '/details/:countryCode',
     name: 'Details',
-    component: Details
+    component: Details,
   }
 ]
 

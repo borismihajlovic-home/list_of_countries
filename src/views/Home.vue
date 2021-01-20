@@ -1,70 +1,57 @@
 <template>
-	<header>
-		<div class="container">
-			<div class="logo">Where in the world?</div>
-			<div class="mode-change"><i class="far fa-moon"></i> Dark Mode</div>
-		</div>
-	</header>
+	<Header></Header>
 	<main class="container home">
 		<section class="search-container">
 			<div class="input-holder">
 				<i class="fas fa-search fa-3x"></i>
 				<input placeholder="Search for a country..." type="text" @input="filterByName" v-model="filterInputValue">
 			</div>
-			<div class="filter-container">
-				<div class="filter-button">Filter by region</div>
+			<div class="filter-container" :class="{active: isListOpened}">
+				<div class="filter-button" @click="toggleRegionList">{{ regionValue === '' ? 'Filter by region' : regionValue }}</div>
 				<div class="filter-options">
-					<div>Africa</div>
-					<div>Europe</div>
-					<div>Asia</div>
-				</div>
+					<div @click="selectRegion('')">all</div>
+					<div v-for="(regionName, index) in regions" :key="index" @click="selectRegion(regionName)">{{ regionName }}</div>
+				</div> 
 			</div>
 		</section>
 
-		<list-of-countries></list-of-countries>
+		<list-of-countries :inputValue="filterInputValue" :region="regionValue"></list-of-countries>
 	</main>
 </template>
 
 <script>
 import ListOfCountries from '../components/ListOfCountries.vue';
+import Header from '../components/Header.vue';
 
 export default {
 	components: {
+		Header,
 		ListOfCountries
 	},
 	data(){
 		return{
 			filterInputValue: null,
-			regionValue: null
+			regionValue: '',
+			isListOpened: false,
+			regions: ['africa', 'americas', 'asia', 'europe', 'oceania']
 		}
 	},
 	methods:{
 		filterByName(event){
 			this.filterInputValue = event.target.value;
-			console.log(event, this.filterInputValue);
+		},
+		selectRegion(region){
+			this.isListOpened = false;
+			this.regionValue = region;
+		},
+		toggleRegionList(){
+			this.isListOpened = !this.isListOpened;
 		}
 	}
 }
 </script>
 
 <style lang="scss" scoped>
-	header{
-		box-shadow: 0 4px 2px -2px rgba(0,0,0,0.15);
-		background-color: $white;
-		&>div{
-			display: flex;
-			justify-content: space-between;
-			padding-top: 30px;
-			padding-bottom: 30px;
-			.logo{
-				font-weight: $font-weight-bold;
-			}
-			.mode-change{
-				cursor: pointer;
-				font-size: 14px;
-			}
-		}
-	}
 	main.home{
 		padding-top: 45px;
 		padding-bottom: 45px;
@@ -77,6 +64,7 @@ export default {
 			.input-holder{
 				position: relative;
 				@include elements-box-shadow;
+				border-radius: 5px;
 				i{
 					font-size: 20px;
 					color:$grey;
@@ -97,12 +85,29 @@ export default {
 			}
 			.filter-container{
 				position: relative;
-				max-width: 200px;
+				width: 200px;
+				border-radius: 5px;
+				@include elements-box-shadow;
+				
 				.filter-button{
 					width: 100%;
 					padding: 1.5em 1.7em;
 					border-radius: 5px;
 					background-color: $white;
+					text-transform: capitalize;
+					position: relative;
+					cursor: pointer;
+					&::after{
+						content: '';
+						position: absolute;
+						top: calc(50% - 7px);
+						right: 11px;
+						width: 10px;
+						height: 10px;
+						border-bottom: 3px solid #000;
+						border-right: 3px solid #000;
+						transform: rotate(45deg);
+					}
 				}
 				.filter-options{
 					position: absolute;
@@ -113,9 +118,11 @@ export default {
 					overflow: hidden;
 					border-radius: 5px;
 					background-color: $white;
-					transition: all 0.3s linear;
+					transition: all 0.15s linear;
+					cursor: pointer;
 					div{
 						margin: 20px 0 20px 20px;
+						text-transform: capitalize;
 					}
 				}
 				&.active .filter-options{
