@@ -1,7 +1,18 @@
 # List of Countries
 
+## Description
+```
+This is a small web app that gets and lists all the countries in the world.
+API that is used to get the list of countries (and their details):
+https://restcountries.eu
+
+In this app you can:
+- search by country name (input) and by region (from dropdown).
+- click on a country for more details.
+
 ## Project setup
 ```
+Download/ clone the project and hit
 npm install
 ```
 
