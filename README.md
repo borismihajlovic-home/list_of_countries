@@ -11,8 +11,8 @@ In this app you can:
 - click on a country for more details.
 
 ## Project setup
+Download/ clone the project and hit:
 ```
-Download/ clone the project and hit
 npm install
 ```
 
