@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a small web app that gets and lists all the countries in the world.
+This is a small web app (made with Veu.js 3.0) that gets and lists all the countries in the world.
 API that is used to get the list of countries (and their details):
 https://restcountries.eu
 
